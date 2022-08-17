@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' as dr;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 import '../../database/database.dart';
 import '../../utlis/color_picker.dart';
@@ -24,6 +25,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   late TextEditingController descriptionEditingController;
   int priorityLevel = 0;
   int colorLevel = 0;
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     titleEditingController = TextEditingController();
@@ -36,66 +40,110 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   }
 
   @override
+  void dispose() {
+    titleEditingController.dispose();
+    descriptionEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     appDatabase = Provider.of<AppDatabase>(context);
-    return Scaffold(
-      backgroundColor: colors[colorLevel],
-      appBar: _getDetailAppBar(),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Column(
-          children: [
-            PriorityPicker(
-              index: priorityLevel,
-              onTap: (selectedIndex) {
-                priorityLevel = selectedIndex;
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            ColorPicker(
-              index: colorLevel,
-              onTap: (selectedColor) {
-                colorLevel = selectedColor;
-                setState(() {});
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: titleEditingController,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+
+    return ResponsiveBuilder(
+      builder: (context, sizingInformation) {
+        double w = (sizingInformation.screenSize.width / 100).roundToDouble();
+        return Scaffold(
+          backgroundColor: colors[colorLevel],
+          appBar: _getDetailAppBar(),
+          body: Padding(
+            padding: EdgeInsets.all(w * 2),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  PriorityPicker(
+                    index: priorityLevel,
+                    onTap: (selectedIndex) {
+                      priorityLevel = selectedIndex;
+                    },
                   ),
-                  hintText: 'Enter Title'),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            TextFormField(
-              controller: descriptionEditingController,
-              maxLength: 255,
-              minLines: 7,
-              maxLines: 8,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                  SizedBox(height: w * 2),
+                  ColorPicker(
+                    index: colorLevel,
+                    onTap: (selectedColor) {
+                      colorLevel = selectedColor;
+                      setState(() {});
+                    },
                   ),
-                  hintText: 'Enter Title'),
+                  SizedBox(height: w * 4),
+                  TextFormField(
+                    controller: titleEditingController,
+                    minLines: 1,
+                    keyboardType: TextInputType.text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    decoration: InputDecoration(
+                      hintText: "Note Title",
+                      hintStyle: Theme.of(context).textTheme.bodyText2,
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(w * 2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(w * 2),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter some data...";
+                      }
+                      return titleEditingController.text = value.trim();
+                    },
+                    onSaved: (value) {
+                      titleEditingController.text = value!.trim();
+                    },
+                  ),
+                  SizedBox(height: w * 3),
+                  TextFormField(
+                    controller: descriptionEditingController,
+                    minLines: 1,
+                    maxLines: 10,
+                    maxLength: 500,
+                    keyboardType: TextInputType.text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    decoration: InputDecoration(
+                      hintText: "Description",
+                      hintStyle: Theme.of(context).textTheme.bodyText2,
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(w * 2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(w * 2),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter some data...";
+                      }
+                      return descriptionEditingController.text = value.trim();
+                    },
+                    onSaved: (value) {
+                      descriptionEditingController.text = value!.trim();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   _getDetailAppBar() {
     return AppBar(
       backgroundColor: colors[colorLevel],
-      elevation: 0,
       leading: IconButton(
         onPressed: () {
           Navigator.pop(context);
@@ -133,29 +181,32 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   }
 
   void _saveToDb() {
-    if (widget.noteCompanion.id.present) {
-      appDatabase
-          .updateNote(NoteData(
-              id: widget.noteCompanion.id.value,
-              title: titleEditingController.text,
-              description: descriptionEditingController.text,
-              color: colorLevel,
-              priority: priorityLevel,
-              date: DateFormat.yMMMd().format(DateTime.now())))
-          .then((value) {
-        Navigator.pop(context, true);
-      });
-    } else {
-      appDatabase
-          .insertNote(NoteCompanion(
-              title: dr.Value(titleEditingController.text),
-              description: dr.Value(descriptionEditingController.text),
-              color: dr.Value(colorLevel),
-              priority: dr.Value(priorityLevel),
-              date: dr.Value(DateFormat.yMMMd().format(DateTime.now()))))
-          .then((value) {
-        Navigator.pop(context, true);
-      });
+    final isValid = _formKey.currentState!.validate();
+    if (isValid != null) {
+      if (widget.noteCompanion.id.present) {
+        appDatabase
+            .updateNote(NoteData(
+                id: widget.noteCompanion.id.value,
+                title: titleEditingController.text,
+                description: descriptionEditingController.text,
+                color: colorLevel,
+                priority: priorityLevel,
+                date: DateFormat.yMMMd().format(DateTime.now())))
+            .then((value) {
+          Navigator.pop(context, true);
+        });
+      } else {
+        appDatabase
+            .insertNote(NoteCompanion(
+                title: dr.Value(titleEditingController.text),
+                description: dr.Value(descriptionEditingController.text),
+                color: dr.Value(colorLevel),
+                priority: dr.Value(priorityLevel),
+                date: dr.Value(DateFormat.yMMMd().format(DateTime.now()))))
+            .then((value) {
+          Navigator.pop(context, true);
+        });
+      }
     }
   }
 
@@ -164,14 +215,14 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Delete Note?'),
-          content: Text('Do you really want to delete this note'),
+          title: const Text('Delete Note?'),
+          content: const Text('Do you really want to delete this note'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -191,7 +242,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   Navigator.pop(context, true);
                 });
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 List<Color> colors = const [
   Color(0xFFFFFFFF),
@@ -26,12 +27,11 @@ class ColorPicker extends StatefulWidget {
 class _ColorPickerState extends State<ColorPicker> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 30,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: colors.length,
-        itemBuilder: (context, index) {
+    return ResponsiveBuilder(
+      builder: (context, sizingInformation) {
+        double w = (sizingInformation.screenSize.width / 100).roundToDouble();
+
+        Widget colorContainer(int index,double w){
           return InkWell(
             onTap: () {
               widget.index = index;
@@ -42,20 +42,40 @@ class _ColorPickerState extends State<ColorPicker> {
               alignment: Alignment.center,
               children: [
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  width: 30,
-                  height: 30,
+                  width: w * 7,
+                  height: w * 7,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(w * 4),
+                      border: Border.all(color: Colors.black, width: 1.5),
                       color: colors[index]),
                 ),
-                widget.index == index ? const Icon(Icons.check) : Container()
+                widget.index == index
+                    ? const Icon(Icons.check)
+                    : Container()
               ],
             ),
           );
-        },
-      ),
+        }
+
+        return SizedBox(
+          height: w * 8,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              colorContainer(0,  w),
+              colorContainer(1,  w),
+              colorContainer(2,  w),
+              colorContainer(3,  w),
+              colorContainer(4,  w),
+              colorContainer(5,  w),
+              colorContainer(6,  w),
+              colorContainer(7,  w),
+              colorContainer(8,  w),
+              colorContainer(9,  w),
+            ],
+          ),
+        );
+      },
     );
   }
 }
