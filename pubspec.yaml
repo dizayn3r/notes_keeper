@@ -36,13 +36,12 @@ dependencies:
   cupertino_icons:
   drift:
   provider:
-  flutter_staggered_grid_view:
   grid_staggered_lite:
   intl:
   sqlite3_flutter_libs:
   path_provider:
   path:
-  google_fonts: ^3.0.1
+  google_fonts:
 
 dev_dependencies:
   flutter_test:
