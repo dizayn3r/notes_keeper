@@ -8,8 +8,7 @@ import 'package:notes_keeper/ui/screen/note_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-
-enum TileType{
+enum TileType {
   square,
   horRect,
   verRect,
@@ -154,8 +153,14 @@ class _NoteListPageState extends State<NoteListPage> {
                         ),
                       );
                     },
+                    // onLongPress: () {
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(
+                    //       content: Text('Long Press'),
+                    //     ),
+                    //   );
+                    // },
                     child: Card(
-                      elevation: 2.0,
                       color: colors[noteData.color!],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(w * 4),
