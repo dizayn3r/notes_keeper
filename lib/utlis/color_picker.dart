@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-List<Color> colors = const [
-  Color(0xFFFFFFFF),
+List<Color> colors = [
   Color(0xffF28B83),
   Color(0xFFFCBC05),
   Color(0xFFFFF476),
@@ -11,7 +10,7 @@ List<Color> colors = const [
   Color(0xFFE6C9A9),
   Color(0xFFE8EAEE),
   Color(0xFFA7FEEA),
-  Color(0xFFCAF0F8)
+  Color(0xFFCAF0F8),
 ];
 
 class ColorPicker extends StatefulWidget {
@@ -31,7 +30,7 @@ class _ColorPickerState extends State<ColorPicker> {
       builder: (context, sizingInformation) {
         double w = (sizingInformation.screenSize.width / 100).roundToDouble();
 
-        Widget colorContainer(int index,double w){
+        Widget colorContainer(int index, double w) {
           return InkWell(
             onTap: () {
               widget.index = index;
@@ -46,11 +45,13 @@ class _ColorPickerState extends State<ColorPicker> {
                   height: w * 7,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(w * 4),
-                      border: Border.all(color: Colors.black, width: 1.5),
+                      border:
+                          Border.all(color: Colors.grey.shade900, width: 1.5),
                       color: colors[index]),
                 ),
                 widget.index == index
-                    ? const Icon(Icons.check)
+                    ? Icon(Icons.check_rounded,
+                        color: Colors.grey.shade900, size: w * 5)
                     : Container()
               ],
             ),
@@ -62,16 +63,15 @@ class _ColorPickerState extends State<ColorPicker> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              colorContainer(0,  w),
-              colorContainer(1,  w),
-              colorContainer(2,  w),
-              colorContainer(3,  w),
-              colorContainer(4,  w),
-              colorContainer(5,  w),
-              colorContainer(6,  w),
-              colorContainer(7,  w),
-              colorContainer(8,  w),
-              colorContainer(9,  w),
+              colorContainer(0, w),
+              colorContainer(1, w),
+              colorContainer(2, w),
+              colorContainer(3, w),
+              colorContainer(4, w),
+              colorContainer(5, w),
+              colorContainer(6, w),
+              colorContainer(7, w),
+              colorContainer(8, w),
             ],
           ),
         );

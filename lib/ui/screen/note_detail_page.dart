@@ -56,83 +56,110 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         return Scaffold(
           backgroundColor: colors[colorLevel],
           appBar: _getDetailAppBar(),
-          body: Padding(
-            padding: EdgeInsets.all(w * 2),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  PriorityPicker(
-                    index: priorityLevel,
-                    onTap: (selectedIndex) {
-                      priorityLevel = selectedIndex;
-                    },
-                  ),
-                  SizedBox(height: w * 2),
-                  ColorPicker(
-                    index: colorLevel,
-                    onTap: (selectedColor) {
-                      colorLevel = selectedColor;
-                      setState(() {});
-                    },
-                  ),
-                  SizedBox(height: w * 4),
-                  TextFormField(
-                    controller: titleEditingController,
-                    minLines: 1,
-                    keyboardType: TextInputType.text,
-                    style: Theme.of(context).textTheme.bodyText2,
-                    decoration: InputDecoration(
-                      hintText: "Note Title",
-                      hintStyle: Theme.of(context).textTheme.bodyText2,
-                      alignLabelWithHint: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(w * 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(w * 2),
-                      ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(w * 2),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    PriorityPicker(
+                      index: priorityLevel,
+                      onTap: (selectedIndex) {
+                        priorityLevel = selectedIndex;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Enter some data...";
-                      }
-                      return titleEditingController.text = value.trim();
-                    },
-                    onSaved: (value) {
-                      titleEditingController.text = value!.trim();
-                    },
-                  ),
-                  SizedBox(height: w * 3),
-                  TextFormField(
-                    controller: descriptionEditingController,
-                    minLines: 1,
-                    maxLines: 10,
-                    maxLength: 500,
-                    keyboardType: TextInputType.text,
-                    style: Theme.of(context).textTheme.bodyText2,
-                    decoration: InputDecoration(
-                      hintText: "Description",
-                      hintStyle: Theme.of(context).textTheme.bodyText2,
-                      alignLabelWithHint: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(w * 2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(w * 2),
-                      ),
+                    SizedBox(height: w * 2),
+                    ColorPicker(
+                      index: colorLevel,
+                      onTap: (selectedColor) {
+                        colorLevel = selectedColor;
+                        setState(() {});
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Enter some data...";
-                      }
-                      return descriptionEditingController.text = value.trim();
-                    },
-                    onSaved: (value) {
-                      descriptionEditingController.text = value!.trim();
-                    },
-                  ),
-                ],
+                    SizedBox(height: w * 4),
+                    TextFormField(
+                      controller: titleEditingController,
+                      cursorRadius: Radius.circular(w * 2),
+                      keyboardType: TextInputType.text,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2!
+                          .copyWith(color: Colors.grey.shade900),
+                      decoration: InputDecoration(
+                        labelText: "Note Title",
+                        labelStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(color: Colors.grey.shade900),
+                        alignLabelWithHint: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 2),
+                          borderSide: BorderSide(color: Colors.grey.shade900),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 2),
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade900, width: 2.0),
+                        ),
+                        contentPadding: EdgeInsets.all(w * 4),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Enter some data...";
+                        }
+                        return titleEditingController.text = value.trim();
+                      },
+                      onSaved: (value) {
+                        titleEditingController.text = value!.trim();
+                      },
+                    ),
+                    SizedBox(height: w * 3),
+                    TextFormField(
+                      controller: descriptionEditingController,
+                      minLines: 1,
+                      maxLines: 10,
+                      maxLength: 500,
+                      keyboardType: TextInputType.text,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2!
+                          .copyWith(color: Colors.grey.shade900),
+                      decoration: InputDecoration(
+                        labelText: "Description",
+                        labelStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(color: Colors.grey.shade900),
+                        counterStyle: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(
+                                color: Colors.grey.shade900, fontSize: w * 3),
+                        alignLabelWithHint: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 2),
+                          borderSide: BorderSide(color: Colors.grey.shade900),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 2),
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade900, width: 2.0),
+                        ),
+                        contentPadding: EdgeInsets.all(w * 4),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Enter some data...";
+                        }
+                        return descriptionEditingController.text = value.trim();
+                      },
+                      onSaved: (value) {
+                        descriptionEditingController.text = value!.trim();
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -149,7 +176,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           Navigator.pop(context);
         },
         icon: const Icon(
-          Icons.chevron_left_outlined,
+          Icons.arrow_back_ios_new_rounded,
           color: Colors.black,
         ),
       ),

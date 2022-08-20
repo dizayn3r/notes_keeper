@@ -8,6 +8,7 @@ import 'package:notes_keeper/ui/screen/note_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+import 'noteHomePage/widgets/note_grid_tile.dart';
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
@@ -22,10 +23,6 @@ class _NoteListPageState extends State<NoteListPage> {
   late List viewType;
   late bool isList;
 
-  final _listCounts = [
-    const StaggeredTile.count(8, 3),
-  ];
-
   final _gridCounts = [
     const StaggeredTile.count(4, 4),
     const StaggeredTile.count(4, 4),
@@ -34,6 +31,16 @@ class _NoteListPageState extends State<NoteListPage> {
     const StaggeredTile.count(4, 4),
     const StaggeredTile.count(4, 6),
     const StaggeredTile.count(4, 4),
+  ];
+
+  final _tileTypes = [
+    TileType.square,
+    TileType.square,
+    TileType.horRect,
+    TileType.verRect,
+    TileType.square,
+    TileType.verRect,
+    TileType.square,
   ];
 
   void viewChange() {
@@ -72,7 +79,7 @@ class _NoteListPageState extends State<NoteListPage> {
             );
           },
           icon: const Icon(
-            Icons.add,
+            Icons.add_rounded,
           ),
         ),
       );
@@ -107,114 +114,123 @@ class _NoteListPageState extends State<NoteListPage> {
   }
 
   Widget _body(double w) {
-    return Padding(
-      padding: EdgeInsets.all(w * 2),
-      child: FutureBuilder<List<NoteData>>(
-        future: _getNoteFromDatabase(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<NoteData>? noteList = snapshot.data;
-            if (noteList != null) {
-              if (noteList.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No Notes Found, Click on add button to add new note',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                );
-              } else {
-                return StaggeredGridView.countBuilder(
-                  itemCount: noteList.length,
-                  crossAxisCount: 8,
-                  mainAxisSpacing: w * 2,
-                  crossAxisSpacing: w * 2,
-                  itemBuilder: (context, index) {
-                    NoteData noteData = noteList[index];
-                    return GestureDetector(
-                      onTap: () {
-                        _navigateToDetail(
-                          'Edit Note',
-                          NoteCompanion(
-                            id: drift.Value(noteData.id),
-                            title: drift.Value(noteData.title),
-                            description: drift.Value(noteData.description),
-                            priority: drift.Value(noteData.priority),
-                            color: drift.Value(noteData.color),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        elevation: 2.0,
-                        color: colors[noteData.color!],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(w * 4),
+    return FutureBuilder<List<NoteData>>(
+      future: _getNoteFromDatabase(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<NoteData>? noteList = snapshot.data;
+          if (noteList != null) {
+            if (noteList.isEmpty) {
+              return Center(
+                child: Text(
+                  'No Notes Found, Click on add button to add new note',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              );
+            } else {
+              return StaggeredGridView.countBuilder(
+                itemCount: noteList.length,
+                padding: EdgeInsets.all(w * 3),
+                crossAxisCount: 8,
+                itemBuilder: (context, index) {
+                  NoteData noteData = noteList[index];
+                  TileType tileType = _tileTypes[index % 7];
+                  return GestureDetector(
+                    onTap: () {
+                      _navigateToDetail(
+                        'Edit Note',
+                        NoteCompanion(
+                          id: drift.Value(noteData.id),
+                          title: drift.Value(noteData.title),
+                          description: drift.Value(noteData.description),
+                          priority: drift.Value(noteData.priority),
+                          color: drift.Value(noteData.color),
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.all(w * 3),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      noteData.title,
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          Theme.of(context).textTheme.bodyText2,
-                                    ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 2.0,
+                      color: colors[noteData.color!],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(w * 4),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(w * 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    noteData.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .copyWith(color: Colors.grey.shade900),
                                   ),
-                                  Text(
-                                    _getPriority(noteData.priority!),
-                                    style: Theme.of(context).textTheme.bodyText2,
-                                  )
-                                ],
-                              ),
-                              Divider(height: w * 2,color: Colors.grey.shade900),
-                              Text(
-                                noteData.description,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                              const Spacer(),
-                              Container(
-                                alignment: Alignment.bottomRight,
-                                child: Text(
-                                  noteData.date,
-                                  textAlign: TextAlign.end,
-                                  style: Theme.of(context).textTheme.subtitle2,
                                 ),
+                                Text(
+                                  _getPriority(noteData.priority!),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2!
+                                      .copyWith(color: Colors.grey.shade900),
+                                )
+                              ],
+                            ),
+                            Divider(height: w * 2, color: Colors.grey.shade900),
+                            Expanded(
+                              child: Text(
+                                noteData.description,
+                                maxLines: _getMaxLines(tileType),
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                               ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: w * 2),
+                            Container(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                noteData.date,
+                                textAlign: TextAlign.end,
+                                style: Theme.of(context).textTheme.subtitle2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                  staggeredTileBuilder: (index) =>
-                      isList == false ? _gridCounts[index % 7] : _listCounts[0],
-                );
-              }
+                    ),
+                  );
+                },
+                staggeredTileBuilder: (index) => isList == false
+                    ? _gridCounts[index % 7]
+                    : StaggeredTile.count(8, 4),
+              );
             }
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                snapshot.error.toString(),
-                style: Theme.of(context).textTheme.bodyText2,
-              ),
-            );
           }
+        } else if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Click on add button to add new note',
+              snapshot.error.toString(),
               style: Theme.of(context).textTheme.bodyText2,
             ),
           );
-        },
-      ),
+        }
+        return Center(
+          child: Text(
+            'Click on add button to add new note',
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+        );
+      },
     );
   }
 
@@ -241,6 +257,17 @@ class _NoteListPageState extends State<NoteListPage> {
         return '!!';
       default:
         return '!';
+    }
+  }
+
+  _getMaxLines(TileType tileType) {
+    switch (tileType) {
+      case TileType.square:
+        return 4;
+      case TileType.verRect:
+        return 8;
+      case TileType.horRect:
+        return 4;
     }
   }
 

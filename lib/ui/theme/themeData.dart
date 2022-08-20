@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../styles/text_styles.dart';
 
 //DE2040
-const bgColorDark = Color(0xFF201a1a);
-const bgColorLight = Color(0xFFfffbff);
+const bgColorDark = Color(0xFF121212);
+const bgColorLight = Color(0xFFFFFFFF);
 const accentLight = Color(0xffbf0030);
 const accentDark =  Color(0xFFffb3b3);
 const borderColor =  Color(0xffd3d3d3);
@@ -82,7 +82,7 @@ class Themes {
       ),
       bodyText2: GoogleFonts.quicksand(
         fontWeight:FontWeight.bold,
-        color:const Color(0xFF202020),
+        color:const Color(0xFFFFFFFF),
         fontSize: 20,
       ),
       bodyText1: GoogleFonts.quicksand(
