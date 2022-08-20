@@ -8,7 +8,12 @@ import 'package:notes_keeper/ui/screen/note_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
-import 'noteHomePage/widgets/note_grid_tile.dart';
+
+enum TileType{
+  square,
+  horRect,
+  verRect,
+}
 
 class NoteListPage extends StatefulWidget {
   const NoteListPage({Key? key}) : super(key: key);
